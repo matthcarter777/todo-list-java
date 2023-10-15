@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import br.com.mateussilva.todolist.errors.ExceptionHandlerController;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,5 +31,13 @@ public class TaskModel {
 
   @CreationTimestamp
   private LocalDateTime creeatedAt;
+
+  public void setTtitle(String title) throws Exception {
+    if( title.length() > 50) {
+      throw new Exception("Texto maior que 50 caracteres.");
+    } else {
+      this.title = title;
+    }
+  }
 
 }

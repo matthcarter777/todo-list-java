@@ -53,11 +53,25 @@ public class TaskController {
   }
 
   @PutMapping("/{id}")
-  public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
+  public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
     var task = this.taskRepository.findById(id).orElse(null);
 
+    var idUser = request.getAttribute("idUser");
+
+    if (task == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+       .body("A tarefa não existe");
+    }
+
+    if (!task.getIdUser().equals(idUser)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body("Você não tem permissão para atualizar esta tarefa");
+    }
+
     Utils.copyNonNullProperties(taskModel, task);
+
+    var taskUpdadated = this.taskRepository.save(task);
   
-    return this.taskRepository.save(task);
+    return ResponseEntity.ok().body(taskUpdadated);
   }
 }
