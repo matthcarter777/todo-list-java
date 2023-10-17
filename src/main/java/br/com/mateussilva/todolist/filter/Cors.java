@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter implements Filter {
+public class Cors implements Filter {
   private final String MAX_AGE_SECS = "3600";
 	
 	// Ler propriedade do application.yaml
