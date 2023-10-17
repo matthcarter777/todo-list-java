@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -20,11 +22,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class Cors implements Filter {
-  private final String MAX_AGE_SECS = "3600";
+  
+	private static final Logger logger = LoggerFactory.getLogger(Cors.class);
 	
-	// Ler propriedade do application.yaml
-	// Os origins podem ser separados por vírgula, exemplo:
-	// localhost,todo-list-app-cyan-one.vercel.app
+	private final String MAX_AGE_SECS = "3600";
+	
 	@Value("${app.cors.allowedOrigins}")
 	private String allowedOrigins;
 	
@@ -36,6 +38,8 @@ public class Cors implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		
 		String allowedOrigin = getAllowedOriginByRequest(request.getHeader("Origin"));
+		
+		logger.info("Origin: {}, Found: {}, Allowed: {}", request.getHeader("Origin"), allowedOrigin != null, allowedOrigins);
 		
 		response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
 		response.setHeader("Access-Control-Allow-Credentials", "true");
