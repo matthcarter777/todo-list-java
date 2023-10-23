@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.mateussilva.todolist.login.LoginModel;
+import br.com.mateussilva.todolist.login.LoginService;
 
 @RestController
 @RequestMapping("/users")
@@ -15,7 +17,7 @@ public class UserController {
 
   @Autowired
   private IUserRepository userRepository;
-
+  
   @PostMapping("/")
   public ResponseEntity create(@RequestBody UserModel userModel) {
 
@@ -33,4 +35,25 @@ public class UserController {
 
     return ResponseEntity.status(201).body(userCreated);
   }
+
+  @PostMapping("/login")
+  public ResponseEntity<Boolean> login(@RequestBody LoginModel credentials) {
+    var username = credentials.username;
+
+    var user = this.userRepository.findByUsername(username);
+
+    if (user == null) {
+       return ResponseEntity.status(400).body(false);
+    }
+
+    var passwordVerify = BCrypt.verifyer().verify(credentials.password.toCharArray(), user.getPassword());
+            
+    if (!passwordVerify.verified) {
+      return ResponseEntity.status(400).body(false);
+    }
+
+    return ResponseEntity.status(201).body(true);
+  }
+
+  
 }
